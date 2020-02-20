@@ -1,0 +1,114 @@
+/**
+ *
+ * Copyright (c) 2009-2014 Freedomotic team http://freedomotic.com
+ *
+ * This file is part of Freedomotic
+ *
+ * This Program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2, or (at your option) any later version.
+ *
+ * This Program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Freedomotic; see the file COPYING. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+package com.epamtask4;
+
+import com.api.EventTemplate;
+import com.api.Protocol;
+import com.app.Freedomotic;
+import com.exceptions.UnableToExecuteException;
+import com.reactions.Command;
+import java.io.IOException;
+import java.util.logging.Logger;
+
+//TODO: please rename this class!
+public class HelloWorld extends Protocol {
+
+    private static final Logger LOG = Logger.getLogger(HelloWorld.class.getName());
+    final int POLLING_WAIT;
+
+    public HelloWorld() {
+        //every plugin needs a name and a manifest XML file
+        super("epamtask4", "/epamtask4/manifest.xml");
+        //read a property from the manifest file below which is in
+        //FREEDOMOTIC_FOLDER/plugins/devices/epamtask4/manifest.xml
+        POLLING_WAIT = configuration.getIntProperty("time-between-reads", 2000);
+        //POLLING_WAIT is the value of the property "time-between-reads" or 2000 millisecs,
+        //default value if the property does not exist in the manifest
+        //It controls the interval in milliseconds between the calls of onRun() method
+        //If POLLING_WAIT=-1 onRun() is called just one time after plugin startup (not in a loop)
+        setPollingWait(POLLING_WAIT);
+        //IMPORTANT: Initialization operations should be done in the onStart() method not in this contructor
+        //DO NOT ADD CODE HERE!
+    }
+
+    @Override
+    protected void onShowGui() {
+        /**
+         * uncomment the line below to add a GUI to this plugin the GUI can be
+         * started with a right-click on plugin list on the desktop frontend
+         * A GUI is useful for example to configure this plugin at runtime
+         */
+        //bindGuiToPlugin(new HelloWorldGui(this));
+    }
+
+    @Override
+    protected void onHideGui() {
+        //implement here what to do when the this plugin GUI is closed
+        //for example you can change the plugin description
+        setDescription("My GUI is now hidden");
+        //or stop the plugin programmatically
+        //this.stop();
+    }
+
+    @Override
+    //This method is always executed in a separate Thread, there is NO NEED to create additional
+    //Threads inside it
+    protected void onRun() {
+        LOG.info("epamtask4 onRun() logs this message every " + "POLLINGWAIT=" + POLLING_WAIT
+                + "milliseconds");
+
+        //at the end of this method the system waits POLLINGTIME 
+        //before calling it again. The result is this log message is printed
+        //every 2 seconds (2000 millisecs)
+    }
+
+    @Override
+    // Executed when this plugin is started
+    protected void onStart() {
+        LOG.info("epamtask4 plugin is started");
+    }
+
+    @Override
+    // Executed when this plugin is stopped
+    protected void onStop() {
+        LOG.info("epamtask4 plugin is stopped ");
+    }
+
+    @Override
+    // Receive commands from freedomotic
+    protected void onCommand(Command c)
+            throws IOException, UnableToExecuteException {
+        LOG.info("epamtask4 plugin receives a command called " + c.getName() + " with parameters "
+                + c.getProperties().toString());
+    }
+
+    @Override
+    // Receive events from freedomotic
+    protected void onEvent(EventTemplate event) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected boolean canExecute(Command c) {
+        //don't mind this method for now
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+}
